@@ -1,0 +1,19 @@
+@import "~bootstrap/scss/bootstrap";
+
+
+$primary_color: #E50914;
+$secondary_color:#1E1E1E;
+$sec_color:#454545;
+$tertiary_color:#FFFFFF;
+
+body {
+    background-color: $sec_color;
+}
+
+nav.navbar {
+    background-color: $primary_color;
+}
+a.navbar-brand, a.nav-link {
+    color: $tertiary_color;
+}
+
