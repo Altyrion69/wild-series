@@ -12,13 +12,13 @@ class CategoryFixtures extends Fixture
       'Action',
       'Aventure',
       'Animation',
-      'Fantasique',
+      'Fantastique',
       'Horreur',
     ];
 
     public function load(ObjectManager $manager)
     {
-      foreach (self::CATEGORIES as $key => $categoryName) {
+      foreach (self::CATEGORIES as $categoryName) {
         $category = new Category();
         $category->setName($categoryName);
 
