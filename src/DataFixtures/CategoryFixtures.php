@@ -12,7 +12,7 @@ class CategoryFixtures extends Fixture
       'Action',
       'Aventure',
       'Animation',
-      'Fantasique',
+      'Fantastique',
       'Horreur',
     ];
 
