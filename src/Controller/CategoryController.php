@@ -23,7 +23,7 @@ class CategoryController extends AbstractController
         return $this->render('category/index.html.twig', ['categories' => $categories]);
     }
 
-    #[Route('/new', name: 'new')]
+    #[Route('/new', name:'new', methods: ['GET', 'POST'])]
     
     public function new(Request$request, EntityManagerInterface $entityManager): Response
     {
@@ -35,11 +35,13 @@ class CategoryController extends AbstractController
             $entityManager->persist($category);
             $entityManager->flush(); 
 
+            $this->addFlash('success', 'Votre catégorie est bien arrivée !');
             return $this->redirectToRoute('category_index');
         }
 
         // Render the form
         return $this->render('category/new.html.twig', [
+            'category' => $category,
             'form' => $form,
         ]);
     }

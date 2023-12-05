@@ -11,6 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProgramRepository::class)]
+#[UniqueEntity('title', message: 'Ce titre existe déjà')]
 class Program
 {
     #[ORM\Id]
@@ -20,11 +21,11 @@ class Program
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message: 'Ne me laisse pas tout vide')]
-    #[UniqueEntity('title', message: 'Ce titre existe déjà')]
+    
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: 'Ne me laisse pas tout vide')]
+    
     private ?string $synopsis = null;
 
     #[ORM\Column(length: 255, nullable: true)]

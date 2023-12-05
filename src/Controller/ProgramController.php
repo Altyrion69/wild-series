@@ -9,6 +9,8 @@ use App\Form\ProgramType;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ProgramRepository;
@@ -19,29 +21,39 @@ use Symfony\Component\HttpFoundation\Request;
 class ProgramController extends AbstractController
 {
   #[Route('/', name: 'index')]
-  public function index(ProgramRepository $programRepository): Response
+  public function index(ProgramRepository $programRepository, RequestStack $requestStack): Response
   {
+    $session = $requestStack->getSession();
     $programs = $programRepository->findAll();
+    if (!$session->has('total')) {
+        $session->set('total', 0); // if total doesn’t exist in session, it is initialized.
+    }
 
-    return $this->render('program/index.html.twig', ['programs' => $programs]);
+    $total = $session->get('total');
+
+    return $this->render('program/index.html.twig', ['programs' => $programs, 'session' => $session, 'total' => $total]);
   }
 
-  #[Route('/new', name: 'new')]
+  #[Route('/new', name:'new', methods: ['GET', 'POST'])]
   public function new(Request $request, EntityManagerInterface $entityManager): Response
   {
     // Create a new Category Object
     $program = new Program();
     $form = $this->createForm(ProgramType::class, $program);
     $form->handleRequest($request);
+
     if ($form->isSubmitted() && $form->isValid()) {
       $entityManager->persist($program);
       $entityManager->flush();
+
+      $this->addFlash('success', 'Votre Série est bien arrivée !');
 
       return $this->redirectToRoute('program_index');
     }
 
     // Render the form
     return $this->render('program/new.html.twig', [
+      'program' => $program,
       'form' => $form,
     ]);
   }

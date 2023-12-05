@@ -15,6 +15,6 @@
     {% endfor %}
 
     <a href="{{ path('app_index') }}">
-        Retour à l'accueil
+        Retour à l'accueil {{ app.session.get('total') }}
     </a>
 {% endblock %}
