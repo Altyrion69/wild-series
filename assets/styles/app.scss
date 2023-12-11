@@ -9,10 +9,16 @@ $tertiary_color:#FFFFFF;
 body {
     background-color: $sec_color;
     color: $tertiary_color;
+    
 }
+#season, #program{
+    margin: 10rem;
+}
+
 
 nav.navbar {
     background-color: $primary_color;
+    
 }
 a.navbar-brand, a.nav-link {
     color: $tertiary_color;
@@ -25,3 +31,4 @@ a.navbar-brand, a.nav-link {
 .toto:hover {
     background-color: $sec_color;
 }
+
