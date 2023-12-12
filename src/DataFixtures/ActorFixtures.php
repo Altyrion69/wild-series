@@ -17,8 +17,7 @@ class ActorFixtures extends Fixture implements DependentFixtureInterface
         // $product = new Product();
         // $manager->persist($product);
         $faker = Factory::create('fr_FR');
-        foreach (ProgramFixtures::PROGRAMS as $actor) {
-                for ($i = 1; $i < 10; $i++) {
+                for ($i = 1; $i < 15; $i++) {
                     $actor = new Actor();
                     $actor->setName($faker->name());
                     $manager->persist($actor);
@@ -26,10 +25,10 @@ class ActorFixtures extends Fixture implements DependentFixtureInterface
                     $programs = $manager->getRepository(Program::class)->findAll();
                     $randomPrograms = $faker->randomElements($programs, 3);
 
-                foreach ($randomPrograms as $program) {
-                    $actor->addProgram($program);
-                }
-                }
+                    foreach ($randomPrograms as $program) {
+                        $actor->addProgram($program);
+                    }
+                
         $manager->flush();
     }
 }
