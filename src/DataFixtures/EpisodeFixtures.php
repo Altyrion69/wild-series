@@ -7,6 +7,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class EpisodeFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -17,6 +18,12 @@ class EpisodeFixtures extends Fixture implements DependentFixtureInterface
         ['title' => 'murder', 'number' => 3, 'synopsis' => 'Diagnosed with terminal lung cancer, chemistry teacher Walter White teams up with former student Jesse Pinkman to cook and sell crystal meth.', 'season' => 'season_3'],
         ['title' => 'murder', 'number' => 4, 'synopsis' => 'Diagnosed with terminal lung cancer, chemistry teacher Walter White teams up with former student Jesse Pinkman to cook and sell crystal meth.', 'season' => 'season_3'],
     ];*/
+    private SluggerInterface $slugger;
+
+    public function __construct(SluggerInterface $slugger)
+    {
+        $this->slugger = $slugger;
+    }
 
     public function load(ObjectManager $manager)
     {
@@ -26,7 +33,10 @@ class EpisodeFixtures extends Fixture implements DependentFixtureInterface
                 for ($i = 1; $i < 5; $i++) {
                     $episode = new Episode();
                     $episode->setTitle($faker->title());
+                    $slug = $this->slugger->slug($episode->getTitle());
+                    $episode->setSlug($slug);
                     $episode->setNumber($i);
+                    $episode->setDuration($faker->numberBetween(30, 60));
                     $episode->setSynopsis($faker->paragraphs(3, true));
                     $episode->setSeasonId($this->getReference('program_' . $program['title'] . 'season_' . $j));
 

@@ -20,12 +20,12 @@
             <li>
                 <strong>Épisode {{ episode.number }} - {{ episode.title }}</strong><br>
                 {{ episode.synopsis }}
-                <li><a href="{{ path('program_episode_show', {programId: program.id, seasonId: season.id, episodeId: episode.id}) }}">Go sur l'épisode{{ episode.number }}</a></li>
+                <li><a href="{{ path('program_episode_show', {slug: program.slug, seasonId: season.id, episodeId: episode.id}) }}">Go sur l'épisode{{ episode.number }}</a></li>
             </li>
         {% endfor %}
     </ul>
 
-    <a href="{{ path('program_show', {'id': program.id}) }}">
+    <a href="{{ path('program_show', {'slug': program.slug}) }}">
         Retour à la série
     </a>
 {% endblock %}

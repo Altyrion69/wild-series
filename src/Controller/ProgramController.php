@@ -15,7 +15,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ProgramRepository;
 use App\Repository\SeasonRepository;
+use App\Service\ProgramDuration;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
@@ -35,7 +37,7 @@ class ProgramController extends AbstractController
   }
 
   #[Route('/new', name:'new', methods: ['GET', 'POST'])]
-  public function new(Request $request, EntityManagerInterface $entityManager): Response
+  public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
   {
     // Create a new Category Object
     $program = new Program();
@@ -43,6 +45,8 @@ class ProgramController extends AbstractController
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+      $slug = $slugger->slug($program->getTitle());
+      $program->setSlug($slug);
       $entityManager->persist($program);
       $entityManager->flush();
 
@@ -58,32 +62,31 @@ class ProgramController extends AbstractController
     ]);
   }
 
-  #[Route('/show/{id}', name: 'show')]
-  public function show(int $id, ProgramRepository $programRepository, SeasonRepository $seasonRepository): Response
+  #[Route('/show/{slug}', name: 'show')]
+  public function show(Program $program, ProgramRepository $programRepository, SeasonRepository $seasonRepository, ProgramDuration $programDuration): Response
   {
-    $program = $programRepository->findOneBy(['id' => $id]);
     
     // same as $program = $programRepository->find($id);
 
     if (!$program) {
       throw $this->createNotFoundException(
-        'No program with id : ' . $id . ' found in program\'s table.'
+        'No program with id : ' . $program . ' found in program\'s table.'
       );
     }
     return $this->render('program/show.html.twig', [
-      'program' => $program,
+      'program' => $program, 
+      'programDuration' => $programDuration->calculate()
       ]);
       
   }
 
-  #[Route('/{programId}/season/{seasonId}', name: 'season_show')]
-    public function showSeason(int $programId, int $seasonId, ProgramRepository $programRepository, SeasonRepository $seasonRepository)
+  #[Route('/{slug}/season/{seasonId}', name: 'season_show')]
+    public function showSeason(Program $program, int $seasonId, SeasonRepository $seasonRepository)
     {
-        $program = $programRepository->findOneById($programId);
 
     if (!$program) {
       throw $this->createNotFoundException(
-        'No program with id : ' . $programId . ' found in program\'s table.'
+        'No program with id : ' . $program->getId() . ' found in program\'s table.'
       );
     }
 
@@ -104,16 +107,16 @@ class ProgramController extends AbstractController
     
 
   }
-  #[Route('program/{programId}/season/{seasonId}/episode/{episodeId}', name: 'episode_show')]
+  #[Route('program/{slug}/season/{seasonId}/episode/{episodeId}', name: 'episode_show')]
   public function showEpisode(
-    int $programId,
+    Program $program,
     int $seasonId,
     int $episodeId,
     ProgramRepository $programRepository,
     SeasonRepository $seasonRepository,
     EpisodeRepository $episodeRepository
   ) {
-    $program = $programRepository->find($programId);
+    
     $season = $seasonRepository->find($seasonId);
     $episode = $episodeRepository->find($episodeId);
 

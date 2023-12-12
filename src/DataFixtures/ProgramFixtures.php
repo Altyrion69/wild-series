@@ -6,6 +6,7 @@ use App\Entity\Program;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ProgramFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -25,13 +26,21 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
         ['title' => 'The Witcher', 'synopsis' => 'Le sorceleur Geralt, un chasseur de monstres, se bat pour trouver sa place dans un monde où les humains se révèlent plus vicieux que les bêtes. Il est alors happé dans une mystérieuse toile tissée par les forces luttant pour contrôler le monde', 'category' =>'category_Aventure', 'country' => 'USA', 'year' => '2017'],
         ['title' => 'Paranormal', 'synopsis' => 'Dans les années 1960, un hématologue est impliqué dans plusieurs événements inexplicables. Bien que sceptique de nature, il devient malgré lui un expert en phénomènes surnaturels et doit résoudre une série de cas mystérieux.', 'category' =>'category_Horreur', 'country' => 'USA', 'year' => '2010'],
     ];
+
+    private SluggerInterface $slugger;
+
+    public function __construct(SluggerInterface $slugger)
+    {
+        $this->slugger = $slugger;
+    }
     public function load(ObjectManager $manager)
     {
         foreach (self::PROGRAMS as $programList) {
             $program = new Program();
             $program->setTitle($programList['title']);
             $program->setSynopsis($programList['synopsis']);
-            
+            $slug = $this->slugger->slug($program->getTitle());
+            $program->setSlug($slug);
             $program->setCountry($programList['country']);
             $program->setYear($programList['year']);
             $program->setCategory($this->getReference($programList['category']));
