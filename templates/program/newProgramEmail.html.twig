@@ -1,0 +1,26 @@
+{#<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Nouvelle Série</title>
+</head>
+<body>
+    <h1>La nouvelle série " {{ program.title }} " vient de débarquer sur What's My Program !</h1>
+    <p>Hello, la nouvelle série " {{ program.title }} " a bien été créée sur Wild Series</p>
+    <p>Synopsis : {{program.synopsis }}</p>
+</body>
+</html>#}
+{% extends "layoutEmail.html.twig" %}
+
+    {% block body %}
+        <h1>New program
+            {{ program.title }}
+            created</h1>
+        <p>Hello, the new program
+            {{ program.title }}
+            has been created on Wild Series</p>
+        <p>Synopsis :
+            {{program.synopsis }}</p>
+
+    {% endblock %}

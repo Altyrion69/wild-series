@@ -17,6 +17,8 @@ use App\Repository\ProgramRepository;
 use App\Repository\SeasonRepository;
 use App\Service\ProgramDuration;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/program', name: 'program_')]
@@ -37,7 +39,7 @@ class ProgramController extends AbstractController
   }
 
   #[Route('/new', name:'new', methods: ['GET', 'POST'])]
-  public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+  public function new(Request$request, MailerInterface $mailer, EntityManagerInterface $entityManager,ProgramRepository $programRepository, SluggerInterface $slugger): Response
   {
     // Create a new Category Object
     $program = new Program();
@@ -47,8 +49,19 @@ class ProgramController extends AbstractController
     if ($form->isSubmitted() && $form->isValid()) {
       $slug = $slugger->slug($program->getTitle());
       $program->setSlug($slug);
+      
       $entityManager->persist($program);
       $entityManager->flush();
+
+      //$programRepository->save($program, true);
+
+      $email = (new Email())
+        ->from($this->getParameter('mailer_from'))
+        ->to('your_email@example.com')
+        ->subject('Une nouvelle série vient d\'être publiée !')
+        ->html($this->renderView('Program/newProgramEmail.html.twig', ['program' => $program]));
+
+      $mailer->send($email);
 
       $this->addFlash('success', 'Votre Série est bien arrivée !');
 
